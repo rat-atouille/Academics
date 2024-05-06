@@ -1,0 +1,23 @@
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99
+
+all: mymatrix
+
+mymatrix: main.o matrix.o bstree.o datatype.o
+	$(CC) $(CFLAGS) $^ -o $@
+
+main.o: main.c matrix.h
+	$(CC) $(CFLAGS) -c $<
+
+matrix.o: matrix.c matrix.h bstree.h
+	$(CC) $(CFLAGS) -c $<
+
+bstree.o: bstree.c bstree.h datatype.h
+	$(CC) $(CFLAGS) -c $<
+
+datatype.o: datatype.c datatype.h
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	rm -f *.o mymatrix
+
