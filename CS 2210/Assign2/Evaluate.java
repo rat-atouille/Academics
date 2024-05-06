@@ -1,6 +1,5 @@
 
 /**
- * @author Hailey Pong
  * This class implements all the auxiliary methods needed by the algorithm that plays the game
  */
 
