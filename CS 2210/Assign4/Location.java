@@ -1,6 +1,5 @@
 
 /**
- * @author Hailey Pong
  * This class represents the location (x,y) of pel
  *
  */
