@@ -1,5 +1,4 @@
 /**
-Author: Hailey Pong
 CS 2210 Assignment 2
 */
 
