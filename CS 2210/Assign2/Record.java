@@ -1,6 +1,5 @@
 /**
  * This class represents the records that will be stored in the hash table, implemented in Dictionary.java
- * @author Hailey Pong
  *
  */
 
