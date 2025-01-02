@@ -1,0 +1,510 @@
+mysql: [Warning] Using a password on the command line interface can be insecure.
+--------------
+SHOW TABLES
+--------------
+
+Tables_in_assign2db
+doctor
+nurse
+patient
+workingfor
+4 rows in set
+
+--------------
+SELECT * FROM nurse
+--------------
+
+nurseid	firstname	lastname	startdate	reporttonurseid
+AAAA1	Hannah	Montana	2020-03-03	NULL
+BBBB2	Alex	Russo	2018-07-10	HHHH8
+CCCC3	Justin	Russo	2015-06-12	BBBB2
+DDDD4	Max	Russo	2017-05-15	BBBB2
+EEEE5	Miley	Stewart	2019-08-20	NULL
+FFFF6	Lilly	Truscott	2021-02-14	EEEE5
+GGGG7	Oliver	Oken	2016-11-30	EEEE5
+HHHH8	Harper	Finkle	2014-09-25	NULL
+8 rows in set
+
+--------------
+UPDATE nurse SET lastname='Cyrus' WHERE firstname='Miley'
+--------------
+
+Query OK, 1 row affected
+Rows matched: 1  Changed: 1  Warnings: 0
+
+--------------
+UPDATE nurse, doctor, workingfor SET nurse.startdate=doctor.startdate
+ WHERE workingfor.docid=doctor.docid AND doctor.lastname='Tanaka'
+ AND workingfor.nurseid = nurse.nurseid
+--------------
+
+Query OK, 4 rows affected
+Rows matched: 4  Changed: 4  Warnings: 0
+
+--------------
+SELECT * FROM nurse
+--------------
+
+nurseid	firstname	lastname	startdate	reporttonurseid
+AAAA1	Hannah	Montana	2020-03-03	NULL
+BBBB2	Alex	Russo	2010-04-20	HHHH8
+CCCC3	Justin	Russo	2010-04-20	BBBB2
+DDDD4	Max	Russo	2017-05-15	BBBB2
+EEEE5	Miley	Cyrus	2019-08-20	NULL
+FFFF6	Lilly	Truscott	2021-02-14	EEEE5
+GGGG7	Oliver	Oken	2010-04-20	EEEE5
+HHHH8	Harper	Finkle	2010-04-20	NULL
+8 rows in set
+
+--------------
+SELECT * FROM doctor
+--------------
+
+docid	firstname	lastname	birthdate	startdate
+AGD56	Sean	Aziz	1985-02-23	2015-08-14
+HIT45	Scott	Mortensen	1960-11-07	2000-12-01
+JKK78	Jon	Joselyn	1980-09-19	2012-03-25
+RAD34	Sue	Tanaka	1978-06-15	2010-04-20
+SEE66	Colleen	Tyler	1965-01-30	1999-09-10
+YRT67	Gerry	Webster	1972-04-11	2005-07-18
+6 rows in set
+
+--------------
+INSERT INTO doctor (docid, firstname, lastname, birthdate, startdate) VALUES 
+ ('RAN12', 'Micheal', 'Scott','1978-01-14', '2023-10-10')
+--------------
+
+Query OK, 1 row affected
+
+--------------
+INSERT INTO patient (ohip, firstname, lastname, birthdate, weight, height, treatsdocid)
+VALUES ('111111112', 'Dwight', 'Schrute', '1980-01-01', 72, 1.82, 'RAN12')
+--------------
+
+Query OK, 1 row affected
+
+--------------
+INSERT INTO workingfor (docid, nurseid, hours)
+VALUES ('RAN12', 'AAA13', 50)
+--------------
+
+ERROR 1452 (23000) at line 26: Cannot add or update a child row: a foreign key constraint fails (`assign2db`.`workingfor`, CONSTRAINT `workingfor_ibfk_2` FOREIGN KEY (`nurseid`) REFERENCES `nurse` (`nurseid`))
+--------------
+INSERT INTO nurse (nurseid, firstname, lastname, startdate, reporttonurseid)
+VALUES ('AAA13', 'Mary','Steep', '2021-02-10', 'BBBB2')
+--------------
+
+Query OK, 1 row affected
+
+--------------
+SELECT * FROM doctor WHERE docid = 'RAN12'
+--------------
+
+docid	firstname	lastname	birthdate	startdate
+RAN12	Micheal	Scott	1978-01-14	2023-10-10
+1 row in set
+
+--------------
+SELECT p.*, d.firstname as doctor_firstname, d.lastname as doctor_lastname
+FROM patient p
+JOIN doctor d ON p.treatsdocid = d.docid
+WHERE p.ohip = '111111112'
+--------------
+
+ohip	firstname	lastname	weight	birthdate	height	treatsdocid	doctor_firstname	doctor_lastname
+111111112	Dwight	Schrute	72	1980-01-01	1.82	RAN12	Micheal	Scott
+1 row in set
+
+--------------
+SELECT n1.firstname as nurse_name, n1.lastname as nurse_lastname,
+       n2.firstname as supervisor_firstname, n2.lastname as supervisor_lastname
+FROM nurse n1
+LEFT JOIN nurse n2 ON n1.reporttonurseid = n2.nurseid
+WHERE n1.nurseid = 'AAA13'
+--------------
+
+nurse_name	nurse_lastname	supervisor_firstname	supervisor_lastname
+Mary	Steep	Alex	Russo
+1 row in set
+
+--------------
+SELECT d.firstname as doctor_firstname, d.lastname as doctor_lastname,
+       n.firstname as nurse_firstname, n.lastname as nurse_lastname,
+       w.hours
+FROM workingfor w
+JOIN doctor d ON w.docid = d.docid
+JOIN nurse n ON w.nurseid = n.nurseid
+WHERE w.docid = 'RAN12' AND w.nurseid = 'AAA13'
+--------------
+
+Empty set
+
+--------------
+SELECT lastname FROM patient
+--------------
+
+lastname
+Van Houten
+Simpson
+Schrute
+Simpson
+Simpson
+Simpson
+Simpson
+Flanders
+Burns
+Flanders
+Flanders
+11 rows in set
+
+--------------
+SELECT DISTINCT lastname FROM patient
+--------------
+
+lastname
+Van Houten
+Simpson
+Schrute
+Flanders
+Burns
+5 rows in set
+
+--------------
+SELECT * FROM doctor ORDER BY startdate
+--------------
+
+docid	firstname	lastname	birthdate	startdate
+SEE66	Colleen	Tyler	1965-01-30	1999-09-10
+HIT45	Scott	Mortensen	1960-11-07	2000-12-01
+YRT67	Gerry	Webster	1972-04-11	2005-07-18
+RAD34	Sue	Tanaka	1978-06-15	2010-04-20
+JKK78	Jon	Joselyn	1980-09-19	2012-03-25
+AGD56	Sean	Aziz	1985-02-23	2015-08-14
+RAN12	Micheal	Scott	1978-01-14	2023-10-10
+7 rows in set
+
+--------------
+SELECT ohip, firstname, lastname, weight 
+FROM patient 
+WHERE weight >= 50 
+ORDER BY weight
+--------------
+
+ohip	firstname	lastname	weight
+999999999	Todd	Flanders	50
+222222222	Marge	Simpson	58
+000000000	Milhouse	Van Houten	60
+111111111	Homer	Simpson	66
+777777777	Jon	Burns	70
+111111112	Dwight	Schrute	72
+666666666	Ned	Flanders	80
+7 rows in set
+
+--------------
+SELECT p.firstname, p.lastname
+FROM patient p
+JOIN doctor d ON p.treatsdocid = d.docid
+WHERE d.lastname = 'Tanaka'
+--------------
+
+firstname	lastname
+Milhouse	Van Houten
+Marge	Simpson
+2 rows in set
+
+--------------
+SELECT d.firstname, d.lastname, p.firstname as patient_firstname, p.lastname as patient_lastname
+FROM doctor d
+LEFT JOIN patient p ON d.docid = p.treatsdocid
+--------------
+
+firstname	lastname	patient_firstname	patient_lastname
+Sean	Aziz	Homer	Simpson
+Sean	Aziz	Bart	Simpson
+Sean	Aziz	Lisa	Simpson
+Sean	Aziz	Maggie	Simpson
+Scott	Mortensen	NULL	NULL
+Jon	Joselyn	NULL	NULL
+Sue	Tanaka	Milhouse	Van Houten
+Sue	Tanaka	Marge	Simpson
+Micheal	Scott	Dwight	Schrute
+Colleen	Tyler	Rod	Flanders
+Colleen	Tyler	Todd	Flanders
+Gerry	Webster	Ned	Flanders
+Gerry	Webster	Jon	Burns
+13 rows in set
+
+--------------
+SELECT firstname, lastname
+FROM doctor
+WHERE docid NOT IN (SELECT treatsdocid FROM patient WHERE treatsdocid IS NOT NULL)
+--------------
+
+firstname	lastname
+Scott	Mortensen
+Jon	Joselyn
+2 rows in set
+
+--------------
+SELECT AVG(hours) as average_hours
+FROM workingfor
+--------------
+
+average_hours
+68.3750
+1 row in set
+
+--------------
+SELECT 
+   n1.firstname AS "Nurse First Name",
+   n1.lastname AS "Nurse Last Name",
+   n2.firstname AS "Supervisor First Name",
+   n2.lastname AS "Supervisor Last Name"
+FROM nurse n1
+LEFT JOIN nurse n2 ON n1.reporttonurseid = n2.nurseid
+--------------
+
+Nurse First Name	Nurse Last Name	Supervisor First Name	Supervisor Last Name
+Mary	Steep	Alex	Russo
+Hannah	Montana	NULL	NULL
+Alex	Russo	Harper	Finkle
+Justin	Russo	Alex	Russo
+Max	Russo	Alex	Russo
+Miley	Cyrus	NULL	NULL
+Lilly	Truscott	Miley	Cyrus
+Oliver	Oken	Miley	Cyrus
+Harper	Finkle	NULL	NULL
+9 rows in set
+
+--------------
+SELECT 
+   n.firstname,
+   n.lastname,
+   SUM(w.hours) as total_hours,
+   CONCAT('$', FORMAT(SUM(w.hours) * 30, 2)) AS "Total Pay"
+FROM nurse n
+LEFT JOIN workingfor w ON n.nurseid = w.nurseid
+GROUP BY n.nurseid, n.firstname, n.lastname
+ORDER BY SUM(w.hours) * 30 DESC
+--------------
+
+firstname	lastname	total_hours	Total Pay
+Justin	Russo	352	$10,560.00
+Alex	Russo	255	$7,650.00
+Harper	Finkle	222	$6,660.00
+Lilly	Truscott	100	$3,000.00
+Max	Russo	75	$2,250.00
+Oliver	Oken	57	$1,710.00
+Miley	Cyrus	33	$990.00
+Mary	Steep	NULL	NULL
+Hannah	Montana	NULL	NULL
+9 rows in set
+
+--------------
+SELECT 
+   p.firstname AS patient_firstname,
+   p.lastname AS patient_lastname,
+   n.firstname AS nurse_firstname,
+   n.lastname AS nurse_lastname
+FROM patient p
+JOIN doctor d ON p.treatsdocid = d.docid
+JOIN workingfor w ON d.docid = w.docid
+JOIN nurse n ON w.nurseid = n.nurseid
+--------------
+
+patient_firstname	patient_lastname	nurse_firstname	nurse_lastname
+Milhouse	Van Houten	Alex	Russo
+Milhouse	Van Houten	Justin	Russo
+Milhouse	Van Houten	Oliver	Oken
+Milhouse	Van Houten	Harper	Finkle
+Homer	Simpson	Alex	Russo
+Homer	Simpson	Justin	Russo
+Homer	Simpson	Max	Russo
+Homer	Simpson	Oliver	Oken
+Marge	Simpson	Alex	Russo
+Marge	Simpson	Justin	Russo
+Marge	Simpson	Oliver	Oken
+Marge	Simpson	Harper	Finkle
+Bart	Simpson	Alex	Russo
+Bart	Simpson	Justin	Russo
+Bart	Simpson	Max	Russo
+Bart	Simpson	Oliver	Oken
+Lisa	Simpson	Alex	Russo
+Lisa	Simpson	Justin	Russo
+Lisa	Simpson	Max	Russo
+Lisa	Simpson	Oliver	Oken
+Maggie	Simpson	Alex	Russo
+Maggie	Simpson	Justin	Russo
+Maggie	Simpson	Max	Russo
+Maggie	Simpson	Oliver	Oken
+Ned	Flanders	Miley	Cyrus
+Ned	Flanders	Lilly	Truscott
+Ned	Flanders	Oliver	Oken
+Jon	Burns	Miley	Cyrus
+Jon	Burns	Lilly	Truscott
+Jon	Burns	Oliver	Oken
+Rod	Flanders	Alex	Russo
+Rod	Flanders	Justin	Russo
+Rod	Flanders	Oliver	Oken
+Todd	Flanders	Alex	Russo
+Todd	Flanders	Justin	Russo
+Todd	Flanders	Oliver	Oken
+36 rows in set
+
+--------------
+SELECT 
+   p.firstname AS patient_firstname,
+   p.lastname AS patient_lastname,
+   TIMESTAMPDIFF(YEAR, p.birthdate, CURDATE()) AS patient_age,
+   p.birthdate AS patient_birthdate,
+   d.firstname AS doctor_firstname,
+   d.lastname AS doctor_lastname,
+   TIMESTAMPDIFF(YEAR, d.birthdate, CURDATE()) AS doctor_age,
+   d.birthdate AS doctor_birthdate
+FROM patient p
+JOIN doctor d ON p.treatsdocid = d.docid
+WHERE p.birthdate < d.birthdate
+--------------
+
+patient_firstname	patient_lastname	patient_age	patient_birthdate	doctor_firstname	doctor_lastname	doctor_age	doctor_birthdate
+Ned	Flanders	56	1968-01-15	Gerry	Webster	52	1972-04-11
+Jon	Burns	94	1930-02-22	Gerry	Webster	52	1972-04-11
+2 rows in set
+
+--------------
+SELECT DISTINCT n.firstname, n.lastname
+FROM nurse n
+WHERE n.nurseid NOT IN (
+   SELECT w.nurseid 
+   FROM workingfor w 
+   JOIN doctor d ON w.docid = d.docid 
+   WHERE d.lastname = 'Tanaka'
+)
+--------------
+
+firstname	lastname
+Mary	Steep
+Hannah	Montana
+Max	Russo
+Miley	Cyrus
+Lilly	Truscott
+5 rows in set
+
+--------------
+SELECT 
+   n.firstname,
+   n.lastname,
+   COUNT(w.docid) as number_of_doctors
+FROM nurse n
+JOIN workingfor w ON n.nurseid = w.nurseid
+GROUP BY n.nurseid, n.firstname, n.lastname
+HAVING COUNT(w.docid) > 1
+--------------
+
+firstname	lastname	number_of_doctors
+Alex	Russo	3
+Justin	Russo	3
+Oliver	Oken	5
+Harper	Finkle	2
+4 rows in set
+
+--------------
+SELECT 
+   n.firstname,
+   n.lastname,
+   SUM(w.hours) as total_hours,
+   (SELECT AVG(hours) FROM workingfor) as avg_hours,
+   SUM(w.hours) - (SELECT AVG(hours) FROM workingfor) as hours_above_average
+FROM nurse n
+JOIN workingfor w ON n.nurseid = w.nurseid
+GROUP BY n.nurseid, n.firstname, n.lastname
+HAVING SUM(w.hours) > (SELECT AVG(hours) FROM workingfor)
+ORDER BY hours_above_average DESC
+--------------
+
+firstname	lastname	total_hours	avg_hours	hours_above_average
+Justin	Russo	352	68.3750	283.6250
+Alex	Russo	255	68.3750	186.6250
+Harper	Finkle	222	68.3750	153.6250
+Lilly	Truscott	100	68.3750	31.6250
+Max	Russo	75	68.3750	6.6250
+5 rows in set
+
+--------------
+CREATE VIEW Doctor_Patient_Count AS
+SELECT d.firstname, d.lastname, COUNT(p.ohip) AS numofpat
+FROM doctor d
+LEFT JOIN patient p ON d.docid = p.treatsdocid
+GROUP BY d.docid, d.firstname, d.lastname
+HAVING COUNT(p.ohip) > 0
+--------------
+
+Query OK, 0 rows affected
+
+--------------
+SELECT *
+FROM Doctor_Patient_Count
+WHERE numofpat = 2
+--------------
+
+firstname	lastname	numofpat
+Sue	Tanaka	2
+Colleen	Tyler	2
+Gerry	Webster	2
+3 rows in set
+
+--------------
+SELECT *
+FROM doctor
+--------------
+
+docid	firstname	lastname	birthdate	startdate
+AGD56	Sean	Aziz	1985-02-23	2015-08-14
+HIT45	Scott	Mortensen	1960-11-07	2000-12-01
+JKK78	Jon	Joselyn	1980-09-19	2012-03-25
+RAD34	Sue	Tanaka	1978-06-15	2010-04-20
+RAN12	Micheal	Scott	1978-01-14	2023-10-10
+SEE66	Colleen	Tyler	1965-01-30	1999-09-10
+YRT67	Gerry	Webster	1972-04-11	2005-07-18
+7 rows in set
+
+--------------
+DELETE FROM doctor
+WHERE docid = 'HIT45'
+--------------
+
+Query OK, 1 row affected
+
+--------------
+SELECT *
+FROM doctor
+WHERE docid = 'HIT45'
+--------------
+
+Empty set
+
+--------------
+SELECT COUNT(*)
+FROM doctor
+--------------
+
+COUNT(*)
+6
+1 row in set
+
+--------------
+DELETE FROM doctor
+WHERE docid = 'RAD34'
+--------------
+
+ERROR 1451 (23000) at line 197: Cannot delete or update a parent row: a foreign key constraint fails (`assign2db`.`patient`, CONSTRAINT `patient_ibfk_1` FOREIGN KEY (`treatsdocid`) REFERENCES `doctor` (`docid`) ON DELETE RESTRICT)
+--------------
+SELECT COUNT(*)
+FROM doctor
+--------------
+
+COUNT(*)
+6
+1 row in set
+
+Bye
