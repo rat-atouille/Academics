@@ -8,3 +8,9 @@ This course offers an introduction to software tools and systems-level programmi
 
 ## CS 3305 -  Operating Systems
 This course covers the basics of operating system design and implementation, including introductory concepts, process management, communication, scheduling, memory, and file systems.
+
+## CS 3319: DATABASE
+This course introduces student to database management systems. The course discusses how to design a database for a real application. Design of good relational tables is followed by the use of these tables. The standard SQL data manipulation language will be used. Following the logical design phase, we discuss issues of physical storage structures and indexes. Finally, issues of backup and recovery, concurrency control and data distribution will be introduced. (Copied from syllabus)
+
+## CS 4442: Artificial Intelligence
+A broad range of areas falls into the field of Artificial Intelligence. In this course we give a brief introduction to two very active areas of Artificial Intelligence: machine learning and deep learning with applications in computer vision and/or natural language processing. The programming assignments will be done in Python/Matlab. During this course we will study both algorithmic perspectives of artificial intelligence and their practical applications. (Copied from syllabus)
